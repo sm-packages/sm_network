@@ -25,7 +25,7 @@ import 'dart:math' as math;
 final _rand = math.Random();
 
 /// A function that returns [T] if the function should be retried.
-typedef RetryFunction<T> = FutureOr<T> Function(Exception, int);
+typedef RetryFunction<T> = FutureOr<T> Function(Exception e, int attempt);
 
 /// Object holding options for retrying a function.
 ///

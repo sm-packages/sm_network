@@ -102,4 +102,12 @@ void main() {
     print(response.dioException);
     expect(response.dioException?.type, DioExceptionType.receiveTimeout);
   });
+
+  test(
+    'GetListSession',
+    () async {
+      final response = await GetListSession().request();
+      print(response);
+    },
+  );
 }

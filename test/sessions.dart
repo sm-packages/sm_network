@@ -31,10 +31,9 @@ class GetErrorSession extends Session<String> with HttpMockAdapter {
   });
 
   @override
-  String get path => '/getError';
-
-  @override
   int? retryCount;
+
+  var _retryCount = 0;
 
   @override
   RetryFunction<void>? get onRetry => (e, i) {
@@ -43,7 +42,8 @@ class GetErrorSession extends Session<String> with HttpMockAdapter {
         _retryCount = i;
       };
 
-  var _retryCount = 0;
+  @override
+  String get path => '/getError';
 
   @override
   Map<String, Object> get response => _retryCount == retryCount
@@ -61,6 +61,21 @@ class GetErrorSession extends Session<String> with HttpMockAdapter {
 
   @override
   int? get statusCode => _retryCount == retryCount ? 200 : 400;
+}
+
+class GetListSession extends Session<int> with HttpMockAdapter {
+  GetListSession();
+
+  final numbers = <int>[1, 2, 3, 4, 5];
+
+  @override
+  Parameters? get parameters => {'ids': numbers};
+
+  @override
+  String get path => '/getList';
+
+  @override
+  List<int> get responseData => numbers;
 }
 
 class GetNumSession extends Session<num> with HttpMockAdapter {
