@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:sm_network/sm_network.dart';
-import 'package:sm_network/src/extension.dart';
 
 import 'pageable_resp.dart';
 
@@ -19,20 +18,14 @@ class PageableConverter<R extends BaseResp<T>, T> extends Converter<R, T> {
       PageableResp<T>(
         error: error,
         message: message ?? const StringConverter().fromJson(error),
-        code: code ?? HttpErrorCode.error,
+        code: code,
       ) as R;
 
   @override
   R exception(DioException exception) {
     final response = exception.response;
-    if (response != null) {
-      final responseData = _decodeData(response.data);
-      if (responseData is Parameters) {
-        return _handleResponse(responseData);
-      }
-    }
     return error(
-      exception.error,
+      exception.error is HttpError ? exception.error : exception,
       message: exception.message ?? response?.statusMessage,
       code: response?.statusCode,
     );
@@ -40,18 +33,20 @@ class PageableConverter<R extends BaseResp<T>, T> extends Converter<R, T> {
 
   @override
   R success(Response response) {
-    final responseData = _decodeData(response.data);
 
-    if (responseData is Parameters) {
-      return _handleResponse(responseData);
-    } else {
-      return PageableResp<T>(
-        code: response.statusCode,
-        data: responseData,
-        message: response.statusMessage,
-        status: response.requestOptions.validateStatus(response.statusCode),
-      ) as R;
+    dynamic data = response.data;
+    if (data is! Parameters) {
+      data = _decodeData(data);
     }
+    if (data is Parameters) {
+      return _handleResponse(data);
+    }
+    return PageableResp<T>(
+      code: response.statusCode,
+      data: data,
+      message: response.statusMessage,
+      status: response.requestOptions.validateStatus(response.statusCode),
+    ) as R;
   }
 
   /// 解码数据

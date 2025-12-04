@@ -1,8 +1,14 @@
 import 'dart:async';
+import 'dart:io' as io;
 
 import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
+import 'package:dio_http2_adapter/dio_http2_adapter.dart';
+import 'package:flutter/foundation.dart';
+import 'package:proxy_kit/proxy_kit.dart';
 
 import 'coverters/converter.dart';
+import 'http2/connection_manager_impl.dart';
 import 'intercaptors/log_interceptor.dart';
 import 'options/options.dart';
 import 'request.dart';
@@ -21,7 +27,7 @@ typedef Parameters = Map<String, dynamic>;
 
 /// 请求体
 enum ContentType {
-  /// 原始
+  /// text
   raw,
 
   /// json
@@ -37,9 +43,9 @@ enum ContentType {
   String get value {
     switch (this) {
       case ContentType.raw:
-        return Headers.textPlainContentType;
+        return io.ContentType.text.toString();
       case ContentType.json:
-        return Headers.jsonContentType;
+        return io.ContentType.json.toString();
       case ContentType.urlencoded:
         return Headers.formUrlEncodedContentType;
       case ContentType.multipart:
@@ -49,15 +55,18 @@ enum ContentType {
 
   /// 从 content-type 值获取 [ContentType]
   static ContentType? tryParse(String? value) {
-    switch (value) {
-      case Headers.textPlainContentType:
-        return ContentType.raw;
-      case Headers.jsonContentType:
-        return ContentType.json;
-      case Headers.formUrlEncodedContentType:
-        return ContentType.urlencoded;
-      case Headers.multipartFormDataContentType:
-        return ContentType.multipart;
+    if (value != null) {
+      final mediaType = io.ContentType.parse(value).mimeType;
+      switch (mediaType) {
+        case Headers.textPlainContentType:
+          return ContentType.raw;
+        case Headers.jsonContentType:
+          return ContentType.json;
+        case Headers.formUrlEncodedContentType:
+          return ContentType.urlencoded;
+        case Headers.multipartFormDataContentType:
+          return ContentType.multipart;
+      }
     }
     return null;
   }
@@ -81,6 +90,9 @@ final class Http {
   late final Dio _dio;
 
   late HttpBaseOptions _options;
+
+  /// 环境变量
+  Map<String, String> environment = {};
 
   /// 配置
   HttpBaseOptions get options => _options;
@@ -109,13 +121,14 @@ final class Http {
   ///
   /// [transformer] 允许在将 请求数据发送至服务器/响应数据从服务器接收 之前进行更改
   /// 这仅适用于具有有效载荷的请求。
-  void config({
+  Future<void> config({
     Dio? dio,
     HttpBaseOptions? options,
     Iterable<Interceptor>? interceptors,
+    HttpClientOptions? httpClientOptions,
     HttpClientAdapter? httpClientAdapter,
     Transformer? transformer,
-  }) {
+  }) async {
     _options = options ?? HttpBaseOptions();
     _dio = dio ?? Dio(_options);
 
@@ -150,6 +163,72 @@ final class Http {
 
     if (httpClientAdapter != null) {
       _dio.httpClientAdapter = httpClientAdapter;
+    } else if (httpClientOptions != null && httpClientOptions.enable) {
+      String? proxyHost;
+      int? proxyPort;
+      final String? proxy = await Proxy.getProxy();
+      if (proxy != null && proxy.isNotEmpty) {
+        environment['http_proxy'] = proxy;
+        environment['https_proxy'] = proxy;
+        final List<String> split = proxy.split(':');
+        try {
+          proxyHost = split[0];
+          proxyPort = int.parse(split[1]);
+        } catch (_) {}
+      }
+      if (httpClientOptions.h2) {
+        _dio.httpClientAdapter = Http2Adapter(
+          ConnectionManagerImpl(
+            idleTimeout: 10000,
+            // Ignore bad certificate
+            onClientCreate: (_, config) => config.onBadCertificate = (_) => true,
+            proxyHost: proxyHost,
+            proxyPort: proxyPort,
+          ),
+        );
+      } else if (_dio.httpClientAdapter is IOHttpClientAdapter) {
+        final IOHttpClientAdapter httpClientAdapter = _dio.httpClientAdapter as IOHttpClientAdapter;
+        httpClientAdapter.createHttpClient = () {
+          io.HttpClient client = io.HttpClient()..idleTimeout = const Duration(seconds: 3);
+          if (httpClientOptions.pKCSPath != null) {
+            final io.SecurityContext sc = io.SecurityContext();
+            //file为证书路径
+            sc.setTrustedCertificates(
+              httpClientOptions.pKCSPath!,
+              password: httpClientOptions.pKCSPwd,
+            );
+            client = io.HttpClient(context: sc);
+          }
+          client.badCertificateCallback = (io.X509Certificate cert, String host, int port) => true;
+          client.idleTimeout = const Duration(seconds: 15);
+          if (httpClientOptions.pem != null) {
+            client.badCertificateCallback = (io.X509Certificate cert, String host, int port) =>
+                cert.pem == httpClientOptions.pem;
+          } else {
+            client.badCertificateCallback =
+                (io.X509Certificate cert, String host, int port) => true;
+          }
+          if (!kReleaseMode) {
+            client.findProxy = (Uri url) {
+              /// 因为是异步方法代理设置会有一个请求的延迟;
+              /// 解决办法:
+              ///     1、原生主动通知代理变化
+              ///     2、每次请求前进行获取代理
+              /// 目前每次findProxy时获取，有延迟，因为提供测试使用，暂定
+              Proxy.getProxy().then((String? proxy) {
+                if (proxy?.isNotEmpty ?? false) {
+                  environment['http_proxy'] = proxy!;
+                  environment['https_proxy'] = proxy;
+                } else {
+                  environment.clear();
+                }
+              });
+              return io.HttpClient.findProxyFromEnvironment(url, environment: environment);
+            };
+          }
+          return client;
+        };
+      }
     }
 
     if (transformer != null) {

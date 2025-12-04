@@ -796,11 +796,11 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
       return converter.success(response);
     } on DioException catch (e) {
       return converter.exception(e);
-    } catch (e) {
+    } catch (e, stackTrace) {
       if (Http.shared.options.log.captch.error) {
         Http.shared.options.log.error(
           'path: ${path ?? this.path} \nError: $e',
-          e is Error ? e.stackTrace : StackTrace.current,
+          stackTrace,
         );
       }
       return converter.error(e);

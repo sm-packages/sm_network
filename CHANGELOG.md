@@ -1,5 +1,11 @@
 # sm_network
 
+## 1.4.0
+
+* Breaking Changes: Removed Converter in HttpBaseOptions.
+* fix exception response data type error.
+* add HttpClientOptions.
+
 ## 1.3.1
 
 * Add converters

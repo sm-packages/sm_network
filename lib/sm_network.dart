@@ -6,6 +6,7 @@ export 'package:json_annotation/json_annotation.dart';
 
 export 'src/coverters/converter.dart';
 export 'src/error.dart';
+export 'src/extension.dart';
 export 'src/http.dart';
 export 'src/intercaptors/log_interceptor.dart';
 export 'src/log.dart';

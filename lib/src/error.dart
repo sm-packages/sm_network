@@ -14,12 +14,3 @@ class HttpError extends Error {
     return 'HttpError unknown error';
   }
 }
-
-/// 错误码
-final class HttpErrorCode {
-  /// 错误码
-  static const error = 9001;
-
-  /// 内部错误
-  static const internalError = 9003;
-}

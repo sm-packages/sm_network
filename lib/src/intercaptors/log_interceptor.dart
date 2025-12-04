@@ -188,8 +188,8 @@ class HttpLogInterceptor extends Interceptor with _InterceptorWrapperMixin {
       _printLine('╚');
 
       _logPrint(logError, requestOptions, response: err.response, stackTrace: err.stackTrace);
-    } catch (e) {
-      log.error(e, e is Error ? e.stackTrace : StackTrace.current);
+    } catch (e, stackTrace) {
+      log.error(e, stackTrace);
     }
 
     super.onError(err, handler);
@@ -226,8 +226,8 @@ class HttpLogInterceptor extends Interceptor with _InterceptorWrapperMixin {
       _printLine('╚');
 
       _logPrint(logRequest, options);
-    } catch (e) {
-      log.error(e, e is Error ? e.stackTrace : StackTrace.current);
+    } catch (e, stackTrace) {
+      log.error(e, stackTrace);
     }
 
     super.onRequest(options, handler);
@@ -272,8 +272,8 @@ class HttpLogInterceptor extends Interceptor with _InterceptorWrapperMixin {
       _printLine('╚');
 
       _logPrint(logResponse, requestOptions, response: response);
-    } catch (e) {
-      log.error(e, e is Error ? e.stackTrace : StackTrace.current);
+    } catch (e, stackTrace) {
+      log.error(e, stackTrace);
     }
 
     super.onResponse(response, handler);

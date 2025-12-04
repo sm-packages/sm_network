@@ -7,8 +7,7 @@ import 'http_abstract_options.dart';
 import 'http_retry_options.dart';
 
 /// 基础配置
-class HttpBaseOptions<R extends BaseResp<T>, T> extends BaseOptions
-    implements HttpAbstractOptions<R, T> {
+class HttpBaseOptions extends BaseOptions implements HttpAbstractOptions {
   // ignore: public_member_api_docs
   HttpBaseOptions({
     Method? method,
@@ -32,7 +31,6 @@ class HttpBaseOptions<R extends BaseResp<T>, T> extends BaseOptions
     super.listFormat,
     HttpLog? log,
     this.converterOptions = const DefaultConverterOptions(),
-    this.converter,
     this.retryOptions,
   })  : log = log ?? const HttpLog(),
         super(
@@ -41,13 +39,11 @@ class HttpBaseOptions<R extends BaseResp<T>, T> extends BaseOptions
         );
 
   /// 转换选项
+  @override
   final ConverterOptions converterOptions;
 
   /// 是否打印日志
   final HttpLog log;
-
-  @override
-  final Converter<R, T>? converter;
 
   @override
   final HttpRetryOptions? retryOptions;

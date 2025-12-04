@@ -6,7 +6,7 @@ import 'http_abstract_options.dart';
 import 'http_retry_options.dart';
 
 /// 请求配置
-class HttpOptions<R extends BaseResp<T>, T> extends Options implements HttpAbstractOptions<R, T> {
+class HttpOptions<R extends BaseResp<T>, T> extends Options implements HttpAbstractOptions {
   // ignore: public_member_api_docs
   HttpOptions({
     Method? method,
@@ -25,6 +25,7 @@ class HttpOptions<R extends BaseResp<T>, T> extends Options implements HttpAbstr
     super.requestEncoder,
     super.responseDecoder,
     super.listFormat,
+    this.converterOptions = const DefaultConverterOptions(),
     this.converter,
     this.retryOptions,
   }) : super(
@@ -32,8 +33,12 @@ class HttpOptions<R extends BaseResp<T>, T> extends Options implements HttpAbstr
           contentType: contentType?.value,
         );
 
-  @override
+  /// 数据转换
   final Converter<R, T>? converter;
+
+  /// 转换选项
+  @override
+  final ConverterOptions converterOptions;
 
   @override
   final HttpRetryOptions? retryOptions;
