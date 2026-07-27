@@ -5,13 +5,13 @@ import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 import 'package:dio_http2_adapter/dio_http2_adapter.dart';
 import 'package:flutter/foundation.dart';
-import 'package:proxy_kit/proxy_kit.dart';
 
 import 'coverters/converter.dart';
 import 'http2/connection_manager_impl.dart';
 import 'intercaptors/log_interceptor.dart';
 import 'options/options.dart';
 import 'request.dart';
+import 'system_proxy.dart';
 import 'utils/utils.dart';
 
 part 'session.dart';
@@ -166,7 +166,7 @@ final class Http {
     } else if (httpClientOptions != null && httpClientOptions.enable) {
       String? proxyHost;
       int? proxyPort;
-      final String? proxy = await Proxy.getProxy();
+      final String? proxy = await SystemProxy.getProxy();
       if (proxy != null && proxy.isNotEmpty) {
         environment['http_proxy'] = proxy;
         environment['https_proxy'] = proxy;
@@ -215,7 +215,7 @@ final class Http {
               ///     1、原生主动通知代理变化
               ///     2、每次请求前进行获取代理
               /// 目前每次findProxy时获取，有延迟，因为提供测试使用，暂定
-              Proxy.getProxy().then((String? proxy) {
+              SystemProxy.getProxy().then((String? proxy) {
                 if (proxy?.isNotEmpty ?? false) {
                   environment['http_proxy'] = proxy!;
                   environment['https_proxy'] = proxy;

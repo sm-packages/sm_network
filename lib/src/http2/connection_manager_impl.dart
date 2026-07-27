@@ -44,6 +44,11 @@ class ConnectionManagerImpl implements ConnectionManager {
   bool _closed = false;
   bool _forceClosed = false;
 
+  /// Number of cached HTTP/2 connections.
+  // dio_http2_adapter 2.6 does not declare this testing getter.
+  // ignore: annotate_overrides
+  int get cachedConnectionsCount => _transportsMap.length;
+
   @override
   void close({bool force = false}) {
     _closed = true;
