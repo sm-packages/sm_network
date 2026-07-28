@@ -1,9 +1,9 @@
 name: sm_network
 description: "A Flutter networking library that provides a simple and convenient
   way to access network resources."
-homepage: https://github.com/shay-wong/flutter_sm_packages
-repository: https://github.com/shay-wong/flutter_sm_packages/tree/main/sm_network
-issue_tracker: https://github.com/shay-wong/flutter_sm_packages/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+sm_network%22
+homepage: https://github.com/shay-wong/flutter_sm_network
+repository: https://github.com/shay-wong/flutter_sm_network
+issue_tracker: https://github.com/shay-wong/flutter_sm_network/issues
 version: 1.4.0
 
 environment:

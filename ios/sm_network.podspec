@@ -5,7 +5,7 @@ Pod::Spec.new do |s|
   s.description      = <<-DESC
 Native system proxy support for the sm_network Flutter package.
                        DESC
-  s.homepage         = 'https://github.com/shay-wong/flutter_sm_packages'
+  s.homepage         = 'https://github.com/shay-wong/flutter_sm_network'
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Shay' => 'shay.wong@qq.com' }
   s.source           = { :path => '.' }
