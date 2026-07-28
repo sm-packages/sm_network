@@ -3,50 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:meta/meta.dart';
 
-import 'http.dart';
-
-/// Represents a 2-tuple, or pair.
-@immutable
-final class Tuple2<T1, T2> {
-  /// Creates a new tuple value with the specified items.
-  const Tuple2(this.item1, this.item2);
-
-  /// Create a new tuple value with the specified list [items].
-  factory Tuple2.fromList(List items) {
-    if (items.length != 2) {
-      throw ArgumentError('items must have length 2');
-    }
-
-    return Tuple2<T1, T2>(items[0] as T1, items[1] as T2);
-  }
-
-  /// Returns the first item of the tuple
-  final T1 item1;
-
-  /// Returns the second item of the tuple
-  final T2 item2;
-
-  @override
-  int get hashCode => Object.hash(item1.hashCode, item2.hashCode);
-
-  @override
-  bool operator ==(Object other) => other is Tuple2 && other.item1 == item1 && other.item2 == item2;
-
-  /// Creates a [List] containing the items of this [Tuple2].
-  ///
-  /// The elements are in item order. The list is variable-length
-  /// if [growable] is true.
-  List toList({bool growable = false}) => List.from([item1, item2], growable: growable);
-
-  @override
-  String toString() => '[$item1, $item2]';
-
-  /// Returns a tuple with the first item set to the specified value.
-  Tuple2<T1, T2> withItem1(T1 v) => Tuple2<T1, T2>(v, item2);
-
-  /// Returns a tuple with the second item set to the specified value.
-  Tuple2<T1, T2> withItem2(T2 v) => Tuple2<T1, T2>(item1, v);
-}
+import '../../http.dart';
 
 @internal
 final class Utils {
@@ -85,7 +42,7 @@ final class Utils {
   }
 
   /// 处理 request data 日志
-  Tuple2<dynamic, String?>? processLogRequestData(
+  (dynamic, String?) processLogRequestData(
     dynamic data,
     ContentType? contentType,
     String Function([int]) indent, {
@@ -107,7 +64,7 @@ final class Utils {
       }
       if (data is FormData) {
         if (isCurl) {
-          return Tuple2(
+          return (
             [
               ...data.fields.map(
                 (e) => '${indent()}--form \'${e.key}="${e.value}"\'',
@@ -134,11 +91,11 @@ final class Utils {
                 ),
               ),
             );
-          return Tuple2(formDataMap, 'Request ${dataType ?? 'Form Data'}');
+          return (formDataMap, 'Request ${dataType ?? 'Form Data'}');
         }
       } else if (contentType == ContentType.urlencoded) {
         if (isCurl) {
-          return Tuple2(
+          return (
             // ignore: avoid_dynamic_calls
             data.entries.map(
               (MapEntry e) {
@@ -148,11 +105,11 @@ final class Utils {
             null,
           );
         } else {
-          return Tuple2(data, 'Request ${dataType ?? 'Form Urlencoded'}');
+          return (data, 'Request ${dataType ?? 'Form Urlencoded'}');
         }
       } else {
         if (isCurl) {
-          return Tuple2(
+          return (
             jsonConverter(
               data,
               indent: indent,
@@ -161,11 +118,11 @@ final class Utils {
             null,
           );
         } else {
-          return Tuple2(data, 'Request ${dataType ?? 'Data'}');
+          return (data, 'Request ${dataType ?? 'Data'}');
         }
       }
     }
-    return null;
+    return (null, null);
   }
 
   /// 处理 request data

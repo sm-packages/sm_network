@@ -87,20 +87,18 @@ class DefaultConverter<R extends BaseResp<T>, T> extends Converter<R, T> {
       BaseResp<T>(
         error: error,
         message: message ?? const StringConverter().fromJson(error),
-        code: code ?? HttpErrorCode.error,
+        code: code,
       ) as R;
 
   @override
   R exception(DioException exception) {
     final response = exception.response;
-    if (response != null) {
-      return success(response);
-    }
-    return error(
-      exception.error is HttpError ? exception.error : exception,
-      message: exception.message ?? response?.statusMessage,
+    return BaseResp<T>(
+      data: response?.data,
+      error: exception.error is HttpError ? exception.error : exception,
+      message: response?.statusMessage ?? exception.message,
       code: response?.statusCode,
-    );
+    ) as R;
   }
 
   @override
@@ -124,9 +122,9 @@ class DefaultConverter<R extends BaseResp<T>, T> extends Converter<R, T> {
   dynamic _decodeData(dynamic data) {
     try {
       return jsonDecode(data);
-    } catch (e) {
+    } catch (e, stackTrace) {
       if (Http.shared.options.log.captch.converter) {
-        Http.shared.options.log.error(e, e is Error ? e.stackTrace : StackTrace.current);
+        Http.shared.options.log.error(e, stackTrace);
       }
       return data;
     }

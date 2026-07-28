@@ -26,20 +26,56 @@ class ContentTypeSession extends Session with HttpMockAdapter {
 }
 
 class GetErrorSession extends Session<String> with HttpMockAdapter {
+  GetErrorSession({
+    this.retryCount = 3,
+  });
+
+  @override
+  int? retryCount;
+
+  var _retryCount = 0;
+
+  @override
+  RetryFunction<void>? get onRetry => (e, i) {
+        // ignore: avoid_print
+        print('第$i次重试: $e');
+        _retryCount = i;
+      };
+
   @override
   String get path => '/getError';
 
   @override
-  Map<String, Object> get response => {
-        'code': -1,
-        'message': 'error',
-      };
+  Map<String, Object> get response => _retryCount == retryCount
+      ? {
+          'code': 1,
+          'message': 'success',
+        }
+      : {
+          'code': -1,
+          'message': 'error',
+        };
 
   @override
-  bool get status => false;
+  bool get status => _retryCount == retryCount;
 
   @override
-  int? get statusCode => 400;
+  int? get statusCode => _retryCount == retryCount ? 200 : 400;
+}
+
+class GetListSession extends Session<int> with HttpMockAdapter {
+  GetListSession();
+
+  final numbers = <int>[1, 2, 3, 4, 5];
+
+  @override
+  Parameters? get parameters => {'ids': numbers};
+
+  @override
+  String get path => '/getList';
+
+  @override
+  List<int> get responseData => numbers;
 }
 
 class GetNumSession extends Session<num> with HttpMockAdapter {

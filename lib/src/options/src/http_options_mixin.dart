@@ -1,93 +1,10 @@
 import 'package:dio/dio.dart';
 
-import 'coverters/converter.dart';
-import 'http.dart';
-import 'log.dart';
-
-/// 基础配置
-class HttpBaseOptions<R extends BaseResp<T>, T> extends BaseOptions
-    implements HttpCommonOptionsMixin<R, T> {
-  // ignore: public_member_api_docs
-  HttpBaseOptions({
-    Method? method,
-    super.connectTimeout,
-    super.receiveTimeout,
-    super.sendTimeout,
-    super.baseUrl = '',
-    super.queryParameters,
-    super.extra,
-    super.headers,
-    super.preserveHeaderCase = false,
-    super.responseType = ResponseType.json,
-    ContentType? contentType,
-    super.validateStatus,
-    super.receiveDataWhenStatusError,
-    super.followRedirects,
-    super.maxRedirects,
-    super.persistentConnection,
-    super.requestEncoder,
-    super.responseDecoder,
-    super.listFormat,
-    HttpLog? log,
-    this.converterOptions = const DefaultConverterOptions(),
-    this.converter,
-  })  : log = log ?? const HttpLog(),
-        super(
-          method: method?.methodName,
-          contentType: contentType?.value,
-        );
-
-  /// 转换选项
-  final ConverterOptions converterOptions;
-
-  /// 是否打印日志
-  final HttpLog log;
-
-  @override
-  final Converter<R, T>? converter;
-}
-
-/// 基础选项
-abstract class HttpCommonOptionsMixin<R extends BaseResp<T>, T> {
-  // ignore: public_member_api_docs
-  HttpCommonOptionsMixin({
-    required this.converter,
-  });
-
-  /// 转换
-  final Converter<R, T>? converter;
-}
-
-/// 请求配置
-class HttpOptions<R extends BaseResp<T>, T> extends Options
-    implements HttpCommonOptionsMixin<R, T> {
-  // ignore: public_member_api_docs
-  HttpOptions({
-    Method? method,
-    super.sendTimeout,
-    super.receiveTimeout,
-    super.extra,
-    super.headers,
-    super.preserveHeaderCase,
-    super.responseType,
-    ContentType? contentType,
-    super.validateStatus,
-    super.receiveDataWhenStatusError,
-    super.followRedirects,
-    super.maxRedirects,
-    super.persistentConnection,
-    super.requestEncoder,
-    super.responseDecoder,
-    super.listFormat,
-    this.converter,
-  }) : super(
-          method: method?.methodName,
-          contentType: contentType?.value,
-        );
-
-  @override
-  final Converter<R, T>? converter;
-}
+import '../../coverters/converter.dart';
+import '../../http.dart';
+import '../../utils/utils.dart';
+import 'http_options.dart';
+import 'http_retry_options.dart';
 
 /// 参数混入
 mixin HttpOptionsMixin<R extends BaseResp<T>, T> {
@@ -102,6 +19,24 @@ mixin HttpOptionsMixin<R extends BaseResp<T>, T> {
         fromJsonT: fromJsonT,
         options: Http.shared.options.converterOptions,
       );
+
+  /// 重试选项
+  HttpRetryOptions? get retryOptions => retryCount == null
+      ? null
+      : HttpRetryOptions(
+          retryCount: retryCount,
+          retryIf: retryIf,
+          onRetry: onRetry,
+        );
+
+  /// 重试次数。
+  int? get retryCount => null;
+
+  /// 重试条件
+  RetryFunction<bool>? get retryIf => null;
+
+  /// 重试回调
+  RetryFunction<void>? get onRetry => null;
 
   /// 请求体数据 默认 null
   Object? get data => null;
@@ -173,6 +108,7 @@ mixin HttpOptionsMixin<R extends BaseResp<T>, T> {
         responseDecoder: responseDecoder,
         listFormat: listFormat,
         converter: converter,
+        retryOptions: retryOptions,
       );
 
   /// 请求参数 默认 null

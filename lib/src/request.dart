@@ -5,8 +5,8 @@ import 'package:dio/dio.dart';
 import 'coverters/converter.dart';
 import 'error.dart';
 import 'http.dart';
-import 'options.dart';
-import 'utils.dart';
+import 'options/options.dart';
+import 'utils/src/utils.dart';
 
 /// 请求接口
 abstract class RequestMethod<R extends BaseResp<T>, T> {
@@ -17,6 +17,7 @@ abstract class RequestMethod<R extends BaseResp<T>, T> {
     Parameters? queryParameters,
     HttpOptions<R, T>? options,
     CancelToken? cancelToken,
+    HttpRetryOptions? retryOptions,
   });
 
   /// Convenience method to make an HTTP DELETE request with [Uri].
@@ -25,6 +26,7 @@ abstract class RequestMethod<R extends BaseResp<T>, T> {
     Object? data,
     HttpOptions<R, T>? options,
     CancelToken? cancelToken,
+    HttpRetryOptions? retryOptions,
   });
 
   /// {@template dio.Dio.download}
@@ -97,6 +99,7 @@ abstract class RequestMethod<R extends BaseResp<T>, T> {
     bool? deleteOnError,
     FileAccessMode? fileAccessMode,
     String? lengthHeader,
+    HttpRetryOptions? retryOptions,
   });
 
   /// {@macro dio.Dio.download}
@@ -110,6 +113,7 @@ abstract class RequestMethod<R extends BaseResp<T>, T> {
     bool? deleteOnError,
     FileAccessMode? fileAccessMode,
     String? lengthHeader,
+    HttpRetryOptions? retryOptions,
   });
 
   /// The eventual method to submit requests. All callers for requests should
@@ -128,6 +132,7 @@ abstract class RequestMethod<R extends BaseResp<T>, T> {
     bool? deleteOnError,
     FileAccessMode? fileAccessMode,
     String? lengthHeader,
+    HttpRetryOptions? retryOptions,
   });
 
   /// Convenience method to make an HTTP GET request.
@@ -138,6 +143,7 @@ abstract class RequestMethod<R extends BaseResp<T>, T> {
     HttpOptions<R, T>? options,
     CancelToken? cancelToken,
     ProgressCallback? onReceiveProgress,
+    HttpRetryOptions? retryOptions,
   });
 
   /// Convenience method to make an HTTP GET request with [Uri].
@@ -147,6 +153,7 @@ abstract class RequestMethod<R extends BaseResp<T>, T> {
     HttpOptions<R, T>? options,
     CancelToken? cancelToken,
     ProgressCallback? onReceiveProgress,
+    HttpRetryOptions? retryOptions,
   });
 
   /// Convenience method to make an HTTP HEAD request.
@@ -156,6 +163,7 @@ abstract class RequestMethod<R extends BaseResp<T>, T> {
     Parameters? queryParameters,
     HttpOptions<R, T>? options,
     CancelToken? cancelToken,
+    HttpRetryOptions? retryOptions,
   });
 
   /// Convenience method to make an HTTP HEAD request with [Uri].
@@ -164,6 +172,7 @@ abstract class RequestMethod<R extends BaseResp<T>, T> {
     Object? data,
     HttpOptions<R, T>? options,
     CancelToken? cancelToken,
+    HttpRetryOptions? retryOptions,
   });
 
   /// Convenience method to make an HTTP PATCH request.
@@ -175,6 +184,7 @@ abstract class RequestMethod<R extends BaseResp<T>, T> {
     CancelToken? cancelToken,
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
+    HttpRetryOptions? retryOptions,
   });
 
   /// Convenience method to make an HTTP PATCH request with [Uri].
@@ -185,6 +195,7 @@ abstract class RequestMethod<R extends BaseResp<T>, T> {
     CancelToken? cancelToken,
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
+    HttpRetryOptions? retryOptions,
   });
 
   /// Convenience method to make an HTTP POST request.
@@ -196,6 +207,7 @@ abstract class RequestMethod<R extends BaseResp<T>, T> {
     CancelToken? cancelToken,
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
+    HttpRetryOptions? retryOptions,
   });
 
   /// Convenience method to make an HTTP POST request with [Uri].
@@ -206,6 +218,7 @@ abstract class RequestMethod<R extends BaseResp<T>, T> {
     CancelToken? cancelToken,
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
+    HttpRetryOptions? retryOptions,
   });
 
   /// Convenience method to make an HTTP PUT request.
@@ -217,6 +230,7 @@ abstract class RequestMethod<R extends BaseResp<T>, T> {
     CancelToken? cancelToken,
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
+    HttpRetryOptions? retryOptions,
   });
 
   /// Convenience method to make an HTTP PUT request with [Uri].
@@ -227,6 +241,7 @@ abstract class RequestMethod<R extends BaseResp<T>, T> {
     CancelToken? cancelToken,
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
+    HttpRetryOptions? retryOptions,
   });
 
   /// Make HTTP request with options.
@@ -245,6 +260,7 @@ abstract class RequestMethod<R extends BaseResp<T>, T> {
     bool? deleteOnError,
     FileAccessMode? fileAccessMode,
     String? lengthHeader,
+    HttpRetryOptions? retryOptions,
   });
 
   /// Make http request with options with [Uri].
@@ -262,6 +278,7 @@ abstract class RequestMethod<R extends BaseResp<T>, T> {
     bool? deleteOnError,
     FileAccessMode? fileAccessMode,
     String? lengthHeader,
+    HttpRetryOptions? retryOptions,
   });
 
   /// Convenience method to make an HTTP upload file request
@@ -274,6 +291,7 @@ abstract class RequestMethod<R extends BaseResp<T>, T> {
     CancelToken? cancelToken,
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
+    HttpRetryOptions? retryOptions,
   });
 
   /// Convenience method to make an HTTP upload file request with [Uri].
@@ -285,6 +303,7 @@ abstract class RequestMethod<R extends BaseResp<T>, T> {
     CancelToken? cancelToken,
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
+    HttpRetryOptions? retryOptions,
   });
 }
 
@@ -300,6 +319,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
     Parameters? queryParameters,
     HttpOptions<R, T>? options,
     CancelToken? cancelToken,
+    HttpRetryOptions? retryOptions,
   }) {
     return request(
       method: Method.delete,
@@ -308,6 +328,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
       queryParameters: queryParameters,
       options: options,
       cancelToken: cancelToken,
+      retryOptions: retryOptions,
     );
   }
 
@@ -317,6 +338,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
     Object? data,
     HttpOptions<R, T>? options,
     CancelToken? cancelToken,
+    HttpRetryOptions? retryOptions,
   }) {
     return requestUri(
       method: Method.delete,
@@ -324,6 +346,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
       data: data,
       options: options,
       cancelToken: cancelToken,
+      retryOptions: retryOptions,
     );
   }
 
@@ -339,6 +362,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
     String? lengthHeader,
     Object? data,
     HttpOptions<R, T>? options,
+    HttpRetryOptions? retryOptions,
   }) {
     return request(
       method: Method.download,
@@ -352,6 +376,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
       lengthHeader: lengthHeader,
       data: data,
       options: options,
+      retryOptions: retryOptions,
     );
   }
 
@@ -366,6 +391,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
     String? lengthHeader,
     Object? data,
     HttpOptions<R, T>? options,
+    HttpRetryOptions? retryOptions,
   }) {
     return requestUri(
       method: Method.download,
@@ -378,6 +404,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
       lengthHeader: lengthHeader,
       data: data,
       options: options,
+      retryOptions: retryOptions,
     );
   }
 
@@ -397,22 +424,9 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
     bool? deleteOnError,
     FileAccessMode? fileAccessMode,
     String? lengthHeader,
+    HttpRetryOptions? retryOptions,
   }) async {
-    path ??= this.path ?? '';
-    savePath ??= this.savePath ?? '';
-    method ??= this.method;
-    data ??= this.data;
-    files ??= this.files;
-    queryParameters ??= parameters;
-    options ??= this.options;
-    options?.method ??= method?.methodName;
-    cancelToken ??= this.cancelToken;
-    onSendProgress ??= this.onSendProgress;
-    onReceiveProgress ??= this.onReceiveProgress;
-    // 处理 download 默认值
-    deleteOnError ??= this.deleteOnError ?? true;
-    fileAccessMode ??= this.fileAccessMode ?? FileAccessMode.write;
-    lengthHeader ??= this.lengthHeader ?? Headers.contentLengthHeader;
+    retryOptions = retryOptions?.mergeWith(this.retryOptions) ?? this.retryOptions;
 
     try {
       data = _utils.processRequestData(
@@ -421,58 +435,107 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
         contentType: contentType,
       );
 
-      Response response;
-
-      if (method == Method.download) {
-        response = await dio.download(
-          path,
-          savePath,
-          onReceiveProgress: onReceiveProgress,
-          queryParameters: queryParameters,
-          cancelToken: cancelToken,
-          deleteOnError: deleteOnError,
-          fileAccessMode: fileAccessMode,
-          lengthHeader: lengthHeader,
-          data: data,
-          options: options,
+      if (retryOptions != null) {
+        return await retryOptions.retry(
+          () => _fetch<E>(
+            path: path,
+            savePath: savePath,
+            data: data,
+            files: files,
+            queryParameters: queryParameters,
+            cancelToken: cancelToken,
+            options: options,
+            onSendProgress: onSendProgress,
+            onReceiveProgress: onReceiveProgress,
+            deleteOnError: deleteOnError,
+            fileAccessMode: fileAccessMode,
+            lengthHeader: lengthHeader,
+          ),
         );
       } else {
-        response = await dio.request<E>(
-          path,
+        return await _fetch<E>(
+          path: path,
+          savePath: savePath,
           data: data,
+          files: files,
           queryParameters: queryParameters,
           cancelToken: cancelToken,
           options: options,
           onSendProgress: onSendProgress,
           onReceiveProgress: onReceiveProgress,
+          deleteOnError: deleteOnError,
+          fileAccessMode: fileAccessMode,
+          lengthHeader: lengthHeader,
         );
-      }
-
-      if (response.requestOptions.validateStatus(response.statusCode)) {
-        return response as Response<E>;
-      } else {
-        final message = 'statusCode: ${response.statusCode}, service error(validate failed)';
-        final exception = DioException(
-          response: response,
-          error: HttpError(message),
-          type: DioExceptionType.badResponse,
-          requestOptions: response.requestOptions,
-          message: message,
-        );
-
-        if (Http.shared.options.log.captch.exception) {
-          Http.shared.options.log.error(
-            'path: $path \n$exception',
-            exception.stackTrace,
-          );
-        }
-        throw exception;
       }
     } on DioException {
       rethrow;
     } catch (e) {
       rethrow;
     }
+  }
+
+  Future<Response<E>> _fetch<E>({
+    String? path,
+    dynamic savePath,
+    Method? method,
+    Object? data,
+    FormFiles? files,
+    Parameters? queryParameters,
+    CancelToken? cancelToken,
+    HttpOptions<R, T>? options,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+    bool? deleteOnError,
+    FileAccessMode? fileAccessMode,
+    String? lengthHeader,
+  }) async {
+    path ??= this.path;
+    savePath ??= this.savePath;
+    method ??= this.method;
+    options?.method ??= method?.methodName;
+    data ??= this.data;
+    files ??= this.files;
+    queryParameters ??= parameters;
+    options ??= this.options;
+    cancelToken ??= this.cancelToken;
+    onReceiveProgress ??= this.onReceiveProgress;
+
+    Response response;
+
+    if (method == Method.download) {
+      // 处理 download 默认值
+      deleteOnError ??= this.deleteOnError ?? true;
+      fileAccessMode ??= this.fileAccessMode ?? FileAccessMode.write;
+      lengthHeader ??= this.lengthHeader ?? Headers.contentLengthHeader;
+
+      response = await dio.download(
+        path ?? '',
+        savePath ?? '',
+        onReceiveProgress: onReceiveProgress,
+        queryParameters: queryParameters,
+        cancelToken: cancelToken,
+        deleteOnError: deleteOnError,
+        fileAccessMode: fileAccessMode,
+        lengthHeader: lengthHeader,
+        data: data,
+        options: options,
+      );
+    } else {
+      onSendProgress ??= this.onSendProgress;
+
+      response = await dio.request<E>(
+        path ?? '',
+        data: data,
+        queryParameters: queryParameters,
+        cancelToken: cancelToken,
+        options: options,
+        onSendProgress: onSendProgress,
+        onReceiveProgress: onReceiveProgress,
+      );
+    }
+
+    return _validateResponse(response);
   }
 
   @override
@@ -483,6 +546,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
     HttpOptions<R, T>? options,
     CancelToken? cancelToken,
     ProgressCallback? onReceiveProgress,
+    HttpRetryOptions? retryOptions,
   }) {
     return request(
       method: Method.get,
@@ -492,6 +556,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
       options: options,
       cancelToken: cancelToken,
       onReceiveProgress: onReceiveProgress,
+      retryOptions: retryOptions,
     );
   }
 
@@ -502,6 +567,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
     HttpOptions<R, T>? options,
     CancelToken? cancelToken,
     ProgressCallback? onReceiveProgress,
+    HttpRetryOptions? retryOptions,
   }) {
     return requestUri(
       method: Method.get,
@@ -510,6 +576,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
       options: options,
       cancelToken: cancelToken,
       onReceiveProgress: onReceiveProgress,
+      retryOptions: retryOptions,
     );
   }
 
@@ -520,6 +587,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
     Parameters? queryParameters,
     HttpOptions<R, T>? options,
     CancelToken? cancelToken,
+    HttpRetryOptions? retryOptions,
   }) {
     return request(
       method: Method.head,
@@ -528,6 +596,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
       queryParameters: queryParameters,
       options: options,
       cancelToken: cancelToken,
+      retryOptions: retryOptions,
     );
   }
 
@@ -537,6 +606,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
     Object? data,
     HttpOptions<R, T>? options,
     CancelToken? cancelToken,
+    HttpRetryOptions? retryOptions,
   }) {
     return requestUri(
       method: Method.head,
@@ -544,6 +614,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
       data: data,
       options: options,
       cancelToken: cancelToken,
+      retryOptions: retryOptions,
     );
   }
 
@@ -556,6 +627,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
     CancelToken? cancelToken,
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
+    HttpRetryOptions? retryOptions,
   }) {
     return request(
       method: Method.patch,
@@ -566,6 +638,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
       cancelToken: cancelToken,
       onSendProgress: onSendProgress,
       onReceiveProgress: onReceiveProgress,
+      retryOptions: retryOptions,
     );
   }
 
@@ -577,6 +650,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
     CancelToken? cancelToken,
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
+    HttpRetryOptions? retryOptions,
   }) {
     return requestUri(
       method: Method.patch,
@@ -586,6 +660,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
       cancelToken: cancelToken,
       onSendProgress: onSendProgress,
       onReceiveProgress: onReceiveProgress,
+      retryOptions: retryOptions,
     );
   }
 
@@ -598,6 +673,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
     CancelToken? cancelToken,
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
+    HttpRetryOptions? retryOptions,
   }) {
     return request(
       method: Method.post,
@@ -608,6 +684,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
       cancelToken: cancelToken,
       onSendProgress: onSendProgress,
       onReceiveProgress: onReceiveProgress,
+      retryOptions: retryOptions,
     );
   }
 
@@ -619,6 +696,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
     CancelToken? cancelToken,
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
+    HttpRetryOptions? retryOptions,
   }) {
     return requestUri(
       method: Method.post,
@@ -628,6 +706,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
       cancelToken: cancelToken,
       onSendProgress: onSendProgress,
       onReceiveProgress: onReceiveProgress,
+      retryOptions: retryOptions,
     );
   }
 
@@ -640,6 +719,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
     CancelToken? cancelToken,
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
+    HttpRetryOptions? retryOptions,
   }) {
     return request(
       method: Method.put,
@@ -650,6 +730,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
       cancelToken: cancelToken,
       onSendProgress: onSendProgress,
       onReceiveProgress: onReceiveProgress,
+      retryOptions: retryOptions,
     );
   }
 
@@ -661,6 +742,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
     CancelToken? cancelToken,
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
+    HttpRetryOptions? retryOptions,
   }) {
     return requestUri(
       method: Method.put,
@@ -670,6 +752,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
       cancelToken: cancelToken,
       onSendProgress: onSendProgress,
       onReceiveProgress: onReceiveProgress,
+      retryOptions: retryOptions,
     );
   }
 
@@ -689,6 +772,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
     bool? deleteOnError,
     FileAccessMode? fileAccessMode,
     String? lengthHeader,
+    HttpRetryOptions? retryOptions,
   }) async {
     converter ??= this.converter;
 
@@ -707,15 +791,16 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
         deleteOnError: deleteOnError,
         fileAccessMode: fileAccessMode,
         lengthHeader: lengthHeader,
+        retryOptions: retryOptions,
       );
       return converter.success(response);
     } on DioException catch (e) {
       return converter.exception(e);
-    } catch (e) {
+    } catch (e, stackTrace) {
       if (Http.shared.options.log.captch.error) {
         Http.shared.options.log.error(
           'path: ${path ?? this.path} \nError: $e',
-          e is Error ? e.stackTrace : StackTrace.current,
+          stackTrace,
         );
       }
       return converter.error(e);
@@ -737,6 +822,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
     bool? deleteOnError,
     FileAccessMode? fileAccessMode,
     String? lengthHeader,
+    HttpRetryOptions? retryOptions,
   }) {
     return request(
       path: uri?.toString(),
@@ -752,6 +838,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
       deleteOnError: deleteOnError,
       fileAccessMode: fileAccessMode,
       lengthHeader: lengthHeader,
+      retryOptions: retryOptions,
     );
   }
 
@@ -765,6 +852,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
     CancelToken? cancelToken,
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
+    HttpRetryOptions? retryOptions,
   }) {
     return request(
       method: Method.upload,
@@ -776,6 +864,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
       cancelToken: cancelToken,
       onSendProgress: onSendProgress,
       onReceiveProgress: onReceiveProgress,
+      retryOptions: retryOptions,
     );
   }
 
@@ -788,6 +877,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
     CancelToken? cancelToken,
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
+    HttpRetryOptions? retryOptions,
   }) {
     return requestUri(
       uri: uri,
@@ -797,6 +887,30 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
       cancelToken: cancelToken,
       onSendProgress: onSendProgress,
       onReceiveProgress: onReceiveProgress,
+      retryOptions: retryOptions,
     );
+  }
+
+  Response<E> _validateResponse<E>(Response response) {
+    if (response.requestOptions.validateStatus(response.statusCode)) {
+      return response as Response<E>;
+    } else {
+      final message = 'statusCode: ${response.statusCode}, service error(validate failed)';
+      final exception = DioException(
+        response: response,
+        error: HttpError(message),
+        type: DioExceptionType.badResponse,
+        requestOptions: response.requestOptions,
+        message: message,
+      );
+
+      if (Http.shared.options.log.captch.exception) {
+        Http.shared.options.log.error(
+          'path: $path \n$exception',
+          exception.stackTrace,
+        );
+      }
+      throw exception;
+    }
   }
 }

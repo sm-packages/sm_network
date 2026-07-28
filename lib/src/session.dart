@@ -39,11 +39,17 @@ class _DefaultSession<T> extends Session<T> {
     this.savePath,
     this.sendTimeout,
     this.validateStatus,
+    this.retryCount,
+    this.onRetry,
+    this.retryIf,
+    HttpRetryOptions? retryOptions,
   })  : _converter = converter,
-        _options = options;
+        _options = options,
+        _retryOptions = retryOptions;
 
   final Converter<BaseResp<T>, T>? _converter;
   final HttpOptions<BaseResp<T>, T>? _options;
+  final HttpRetryOptions? _retryOptions;
 
   @override
   final CancelToken? cancelToken;
@@ -121,6 +127,9 @@ class _DefaultSession<T> extends Session<T> {
   final ResponseType? responseType;
 
   @override
+  final int? retryCount;
+
+  @override
   final dynamic savePath;
 
   @override
@@ -130,8 +139,17 @@ class _DefaultSession<T> extends Session<T> {
   final ValidateStatus? validateStatus;
 
   @override
+  final RetryFunction<bool>? retryIf;
+
+  @override
+  final RetryFunction<void>? onRetry;
+
+  @override
   Converter<BaseResp<T>, T> get converter => _converter ?? super.converter;
 
   @override
   HttpOptions<BaseResp<T>, T>? get options => _options ?? super.options;
+
+  @override
+  HttpRetryOptions? get retryOptions => _retryOptions ?? super.retryOptions;
 }

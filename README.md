@@ -1,4 +1,4 @@
-# sm_network(This repository has been archived. [Please go to](https://github.com/shay-wong/flutter_sm_packages/tree/main/sm_network))
+# sm_network
 
 | [English](README.md) | [简体中文](README.zh.md) |
 | ------------------------------- | ----------------------- |
@@ -42,7 +42,7 @@ Or add the dependency to your `pubspec.yaml` file and run `dart pub get`:
 
 ``` yaml
 dependencies:
-  sm_network: ^0.0.9
+  sm_network: ^1.3.1
 ```
 
 ## Usage

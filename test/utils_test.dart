@@ -2,7 +2,7 @@
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sm_network/sm_network.dart';
-import 'package:sm_network/src/utils.dart';
+import 'package:sm_network/src/utils/src/utils.dart';
 
 void main() {
   final utils = Utils.shared;
@@ -48,7 +48,7 @@ void main() {
   test(
     'test process request data',
     () {
-      Tuple2<dynamic, String?>? processDate(
+      (dynamic, String?) processDate(
         dynamic data,
         ContentType? contentType, {
         bool isCurl = false,
@@ -78,39 +78,39 @@ void main() {
         " --data-urlencode 'age=18'",
       ];
 
-      Tuple2<dynamic, String?>? result;
+      (dynamic, String?) result;
 
       result = processDate(text, ContentType.raw, isCurl: false);
-      expect(result?.item1, text);
-      expect(result?.item2, 'Request Text Plain');
+      expect(result.$1, text);
+      expect(result.$2, 'Request Text Plain');
 
       result = processDate(text, ContentType.raw, isCurl: true);
-      expect(result?.item1, text);
-      expect(result?.item2, null);
+      expect(result.$1, text);
+      expect(result.$2, null);
 
       result = processDate(map, ContentType.json, isCurl: false);
-      expect(result?.item1, map);
-      expect(result?.item2, 'Request Json');
+      expect(result.$1, map);
+      expect(result.$2, 'Request Json');
 
       result = processDate(map, ContentType.json, isCurl: true);
-      expect(result?.item1, json);
-      expect(result?.item2, null);
+      expect(result.$1, json);
+      expect(result.$2, null);
 
       result = processDate(formData, ContentType.multipart, isCurl: false);
-      expect(result?.item1, formFileds);
-      expect(result?.item2, 'Request Form Data');
+      expect(result.$1, formFileds);
+      expect(result.$2, 'Request Form Data');
 
       result = processDate(formData, ContentType.multipart, isCurl: true);
-      expect(result?.item1, formFiledsString);
-      expect(result?.item2, null);
+      expect(result.$1, formFiledsString);
+      expect(result.$2, null);
 
       result = processDate(map, ContentType.urlencoded, isCurl: false);
-      expect(result?.item1, map);
-      expect(result?.item2, 'Request Form Urlencoded');
+      expect(result.$1, map);
+      expect(result.$2, 'Request Form Urlencoded');
 
       result = processDate(map, ContentType.urlencoded, isCurl: true);
-      expect(result?.item1, formUrlencodedString);
-      expect(result?.item2, null);
+      expect(result.$1, formUrlencodedString);
+      expect(result.$2, null);
     },
   );
 }

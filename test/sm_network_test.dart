@@ -19,82 +19,101 @@ void main() {
     ],
   );
 
-  test('GetStringSession', () async {
-    final response = await GetStringSession().request();
-    print('$response');
-    expect(response.data, 'Hello World!');
-  });
+  group(
+    'group',
+    () {
+      test('GetStringSession', () async {
+        final response = await GetStringSession().request();
+        print('$response');
+        expect(response.data, 'Hello World!');
+      });
 
-  test('Net GetStringSession', () async {
-    final response =
-        await Http.session(path: '/getString', extra: Extra(responseData: 'Hello World').toJson())
+      test('Net GetStringSession', () async {
+        final response = await Http.session(
+          path: '/getString',
+          extra: Extra(responseData: 'Hello World').toJson(),
+        )
             .get();
-    print(response);
-    expect(response.data, 'Hello World');
-  });
+        print(response);
+        expect(response.data, 'Hello World');
+      });
 
-  test('GetNumSession', () async {
-    final response = await GetNumSession().request();
-    print(response);
-    expect(response.data, 1234567890);
-  });
+      test('GetNumSession', () async {
+        final response = await GetNumSession().request();
+        print(response);
+        expect(response.data, 1234567890);
+      });
 
-  test('GetObjSession', () async {
-    final response = await GetObjSession().request();
-    print(response);
-    expect(response.data, isA<Person>());
-  });
+      test('GetObjSession', () async {
+        final response = await GetObjSession().request();
+        print(response);
+        expect(response.data, isA<Person>());
+      });
 
-  test('GetObjsSession', () async {
-    final response = await GetObjsSession().request();
-    print(response);
-    expect(response.list, isA<List<Person>>());
-  });
+      test('GetObjsSession', () async {
+        final response = await GetObjsSession().request();
+        print(response);
+        expect(response.list, isA<List<Person>>());
+      });
 
-  test('GetPageableSession', () async {
-    final response = await GetPageableSession().request();
-    print(response);
-    expect(response.list, isA<List<Person>>());
+      test('GetPageableSession', () async {
+        final response = await GetPageableSession().request();
+        print(response);
+        expect(response.list, isA<List<Person>>());
 
-    final response1 = await GetPageableSession(pageNumber: 2).request();
-    print(response1);
-    expect(response.list, isA<List<Person>>());
-  });
+        final response1 = await GetPageableSession(pageNumber: 2).request();
+        print(response1);
+        expect(response.list, isA<List<Person>>());
+      });
 
-  test('GetErrorSession', () async {
-    final response = await GetErrorSession().request();
-    print(response.isSuccess);
-    expect(response.isSuccess, false);
-  });
+      test('GetErrorSession', () async {
+        final response = await GetErrorSession().request(
+            // retryOptions: const HttpRetryOptions(
+            //   retryCount: 2,
+            // ),
+            );
 
-  test('ContentTypeSession', () async {
-    final response = await ContentTypeSession(
-      contentType: ContentType.raw,
-      data: 'Hello World',
-    ).fetch();
-    print(response);
+        print(response.isSuccess);
+        expect(response.isSuccess, true);
+      });
 
-    expect(response.requestOptions.data, 'Hello World');
+      test('ContentTypeSession', () async {
+        final response = await ContentTypeSession(
+          contentType: ContentType.raw,
+          data: 'Hello World',
+        ).fetch();
+        print(response);
 
-    final response1 = await ContentTypeSession(
-      contentType: ContentType.json,
-    ).request();
-    print(response1);
+        expect(response.requestOptions.data, 'Hello World');
 
-    final response2 = await ContentTypeSession(
-      contentType: ContentType.multipart,
-    ).request();
-    print(response2);
+        final response1 = await ContentTypeSession(
+          contentType: ContentType.json,
+        ).request();
+        print(response1);
 
-    final response3 = await ContentTypeSession(
-      contentType: ContentType.urlencoded,
-    ).request();
-    print(response3);
-  });
+        final response2 = await ContentTypeSession(
+          contentType: ContentType.multipart,
+        ).request();
+        print(response2);
 
-  test('TimeoutSession', () async {
-    final response = await TimeoutSession().request();
-    print(response.dioException);
-    expect(response.dioException?.type, DioExceptionType.receiveTimeout);
-  });
+        final response3 = await ContentTypeSession(
+          contentType: ContentType.urlencoded,
+        ).request();
+        print(response3);
+      });
+
+      test('TimeoutSession', () async {
+        final response = await TimeoutSession().request();
+        expect(response.dioException?.type, DioExceptionType.receiveTimeout);
+      });
+
+      test(
+        'GetListSession',
+        () async {
+          final response = await GetListSession().request();
+          print(response);
+        },
+      );
+    },
+  );
 }
