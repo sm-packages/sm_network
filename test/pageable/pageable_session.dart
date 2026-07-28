@@ -58,6 +58,7 @@ abstract class PageableSession<T> extends RawSession<PageableResp<T>, T> {
     bool? deleteOnError,
     FileAccessMode? fileAccessMode,
     String? lengthHeader,
+    HttpRetryOptions? retryOptions,
   }) {
     data ??= this.data;
 

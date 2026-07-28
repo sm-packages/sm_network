@@ -1,25 +1,25 @@
 import 'dart:convert';
 
 import '../../../sm_network.dart';
-import '../../extension.dart';
 
 /// 基础模型
 class BaseResp<T> {
-  // ignore: public_member_api_docs
+  /// 构造函数
   BaseResp({
     this.code,
-    this.data,
+    dynamic data,
     Object? error,
     this.list,
     this.message,
     this.status,
-  }) : rawError = error;
+  })  : rawData = data,
+        rawError = error;
 
   /// 错误码
   int? code;
 
-  /// 数据
-  T? data;
+  /// 原始数据
+  dynamic rawData;
 
   /// 列表
   List<T>? list;
@@ -33,11 +33,14 @@ class BaseResp<T> {
   /// 是否成功
   bool? status;
 
-  /// 转成 [Error]
-  Error? get error => rawError is Error ? rawError as Error? : null;
+  /// 数据
+  T? get data => rawData is T ? rawData as T : null;
 
   /// 转成 [DioException]
   DioException? get dioException => rawError is DioException ? rawError as DioException? : null;
+
+  /// 转成 [Error]
+  Error? get error => rawError is Error ? rawError as Error? : null;
 
   /// 转成 [HttpError]
   HttpError? get httpError => rawError is HttpError ? rawError as HttpError? : null;
@@ -77,7 +80,7 @@ class BaseResp<T> {
         'list': list,
         'message': message,
         'status': status,
-        'error': error,
+        'error': rawError,
       };
 
   @override

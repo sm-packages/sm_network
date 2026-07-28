@@ -1,5 +1,24 @@
 # sm_network
 
+## Unreleased
+
+* Integrate system proxy support directly into `sm_network`.
+* Add Android and iOS plugin implementations with CocoaPods and Swift Package Manager support.
+
+## 1.4.0
+
+* Breaking Changes: Removed Converter in HttpBaseOptions.
+* fix exception response data type error.
+* add HttpClientOptions.
+
+## 1.3.1
+
+* Add converters
+
+## 1.3.0
+
+* Add retry
+
 ## 1.2.0
 
 * Add support for map cascade conversion

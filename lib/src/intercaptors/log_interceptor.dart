@@ -7,7 +7,7 @@ import '../coverters/converter.dart';
 import '../extension.dart';
 import '../http.dart';
 import '../log.dart';
-import '../utils.dart';
+import '../utils/src/utils.dart';
 
 part '_warpper_mixin.dart';
 
@@ -188,8 +188,8 @@ class HttpLogInterceptor extends Interceptor with _InterceptorWrapperMixin {
       _printLine('╚');
 
       _logPrint(logError, requestOptions, response: err.response, stackTrace: err.stackTrace);
-    } catch (e) {
-      log.error(e, e is Error ? e.stackTrace : StackTrace.current);
+    } catch (e, stackTrace) {
+      log.error(e, stackTrace);
     }
 
     super.onError(err, handler);
@@ -226,8 +226,8 @@ class HttpLogInterceptor extends Interceptor with _InterceptorWrapperMixin {
       _printLine('╚');
 
       _logPrint(logRequest, options);
-    } catch (e) {
-      log.error(e, e is Error ? e.stackTrace : StackTrace.current);
+    } catch (e, stackTrace) {
+      log.error(e, stackTrace);
     }
 
     super.onRequest(options, handler);
@@ -272,8 +272,8 @@ class HttpLogInterceptor extends Interceptor with _InterceptorWrapperMixin {
       _printLine('╚');
 
       _logPrint(logResponse, requestOptions, response: response);
-    } catch (e) {
-      log.error(e, e is Error ? e.stackTrace : StackTrace.current);
+    } catch (e, stackTrace) {
+      log.error(e, stackTrace);
     }
 
     super.onResponse(response, handler);
@@ -356,32 +356,30 @@ class HttpLogInterceptor extends Interceptor with _InterceptorWrapperMixin {
 
   /// 处理 data
   void _processData(dynamic data, String? contentType, {bool isCurl = false}) {
-    final result = Utils.shared.processLogRequestData(
+    final (result, title) = Utils.shared.processLogRequestData(
       data,
       ContentType.tryParse(contentType),
       _indent,
       isCurl: isCurl,
     );
     if (result != null) {
-      final item1 = result.item1;
-      final title = result.item2;
       if (isCurl) {
-        if (item1 is Iterable<dynamic>) {
+        if (result is Iterable<dynamic>) {
           _sb
             ..writeAll(
-              item1,
+              result,
               _separator,
             )
             ..writeln();
         } else {
           _sb.writeln(
-            "${_indent()}-d '$item1'",
+            "${_indent()}-d '$result'",
           );
         }
       } else {
         _toJson(
           title ?? 'Request Data',
-          item1,
+          result,
         );
       }
     }

@@ -11,9 +11,10 @@ pubspec.lock
 .vscode/
 .DS_Store
 .idea/
+.gradle/
+.build/
+.swiftpm/
 
-ios/
-android/
 demo/
 example_dart/
 
