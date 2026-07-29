@@ -10,11 +10,15 @@ let package = Package(
     products: [
         .library(name: "sm-network-proxy", targets: ["sm_network_proxy"])
     ],
-    dependencies: [],
+    dependencies: [
+        .package(name: "FlutterFramework", path: "../FlutterFramework")
+    ],
     targets: [
         .target(
             name: "sm_network_proxy",
-            dependencies: []
+            dependencies: [
+                .product(name: "FlutterFramework", package: "FlutterFramework")
+            ]
         )
     ]
 )
