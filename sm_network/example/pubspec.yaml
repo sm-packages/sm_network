@@ -1,0 +1,13 @@
+name: sm_network_example
+description: A command-line example for sm_network.
+version: 1.0.0
+publish_to: none
+environment:
+  sdk: ^3.5.4
+
+dependencies:
+  sm_network:
+    path: ../
+
+dev_dependencies:
+  lints: ">=5.0.0 <7.0.0"

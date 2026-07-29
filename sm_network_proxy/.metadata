@@ -1,0 +1,20 @@
+# This file tracks properties of this Flutter project.
+# Used by Flutter tool to assess capabilities and perform upgrades etc.
+
+version:
+  revision: "ea121f8859e4b13e47a8f845e4586164519588bc"
+  channel: "stable"
+
+project_type: plugin
+
+migration:
+  platforms:
+    - platform: root
+      create_revision: ea121f8859e4b13e47a8f845e4586164519588bc
+      base_revision: ea121f8859e4b13e47a8f845e4586164519588bc
+    - platform: android
+      create_revision: ea121f8859e4b13e47a8f845e4586164519588bc
+      base_revision: ea121f8859e4b13e47a8f845e4586164519588bc
+    - platform: ios
+      create_revision: ea121f8859e4b13e47a8f845e4586164519588bc
+      base_revision: ea121f8859e4b13e47a8f845e4586164519588bc
