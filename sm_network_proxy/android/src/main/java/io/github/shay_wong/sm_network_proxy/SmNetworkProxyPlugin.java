@@ -43,7 +43,7 @@ public final class SmNetworkProxyPlugin implements FlutterPlugin, MethodChannel.
 
         try {
             final int parsedPort = Integer.parseInt(port);
-            return parsedPort >= 0 ? host + ":" + parsedPort : null;
+            return parsedPort >= 1 && parsedPort <= 65535 ? host + ":" + parsedPort : null;
         } catch (NumberFormatException ignored) {
             return null;
         }

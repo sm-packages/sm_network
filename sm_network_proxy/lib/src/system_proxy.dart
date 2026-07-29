@@ -40,7 +40,8 @@ final class SystemProxy {
   }
 
   static IOHttpClientAdapter _createIoAdapter(Uri? proxy) {
-    final directive = proxy == null ? 'DIRECT' : 'PROXY ${proxy.authority}';
+    final authority = proxy == null ? null : Uri(host: proxy.host, port: proxy.port).authority;
+    final directive = authority == null ? 'DIRECT' : 'PROXY $authority';
     return IOHttpClientAdapter(
       createHttpClient: () => HttpClient()..findProxy = (_) => directive,
     );
@@ -50,7 +51,24 @@ final class SystemProxy {
     if (value == null || value.isEmpty) {
       return null;
     }
-    final proxy = Uri.tryParse('http://$value');
-    return proxy != null && proxy.host.isNotEmpty && proxy.hasPort ? proxy : null;
+    final separator = value.lastIndexOf(':');
+    if (separator <= 0 || separator == value.length - 1) {
+      return null;
+    }
+
+    var host = value.substring(0, separator).trim();
+    if (host.startsWith('[') && host.endsWith(']')) {
+      host = host.substring(1, host.length - 1);
+    }
+    final port = int.tryParse(value.substring(separator + 1));
+    if (host.isEmpty || port == null || port < 1 || port > 65535) {
+      return null;
+    }
+
+    try {
+      return Uri(scheme: 'http', host: host, port: port);
+    } on FormatException {
+      return null;
+    }
   }
 }

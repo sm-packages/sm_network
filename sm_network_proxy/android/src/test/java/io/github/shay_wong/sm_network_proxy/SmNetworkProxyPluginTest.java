@@ -39,6 +39,12 @@ public final class SmNetworkProxyPluginTest {
 
         System.setProperty("http.proxyPort", "-1");
         assertNull(SmNetworkProxyPlugin.readSystemProxy());
+
+        System.setProperty("http.proxyPort", "0");
+        assertNull(SmNetworkProxyPlugin.readSystemProxy());
+
+        System.setProperty("http.proxyPort", "65536");
+        assertNull(SmNetworkProxyPlugin.readSystemProxy());
     }
 
     @Test
