@@ -1,15 +1,12 @@
 # sm_network
 
-## Unreleased
-
-* Integrate system proxy support directly into `sm_network`.
-* Add Android and iOS plugin implementations with CocoaPods and Swift Package Manager support.
-
 ## 1.4.0
 
-* Breaking Changes: Removed Converter in HttpBaseOptions.
-* fix exception response data type error.
-* add HttpClientOptions.
+* Remove `Converter` from `HttpBaseOptions` (breaking change).
+* Fix exception response data type handling.
+* Add `HttpClientOptions`, including HTTP/2 support.
+* Add native Android and iOS system proxy integration.
+* Support iOS plugin installation with CocoaPods and Swift Package Manager.
 
 ## 1.3.1
 

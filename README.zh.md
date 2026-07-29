@@ -1,50 +1,70 @@
 # sm_network
 
 | [English](README.md) | [简体中文](README.zh.md) |
-| ------------------ | ----------------------- |
+| -------------------- | ----------------------- |
 
-一个 Flutter 网络请求库，提供了一些常用的功能：
-
-- 📱 支持 Dio 网络请求
-- 📦 支持 Json 解析
-- 🎉 支持打印日志到控制台
-- 💥 支持打印错误信息到控制台
-- *(剩余功能还在开发中...)*
+一个基于 Dio 的 Flutter 网络请求库。
 
 ## 特性
 
-- [x] <span style="color: lightgreen;">支持 Dio 网络请求</span>
-- [x] <span style="color: lightgreen;">支持 Json 解析</span>
-- [x] <span style="color: lightgreen;">支持打印日志到控制台</span>
-- [x] <span style="color: lightgreen;">支持打印错误信息到控制台</span>
-- [x] <span style="color: #A9A9A9;">初始配置</span>
-- [ ] <span style="color: #A9A9A9;">支持日志写入文件缓存</span>
+- 基于 Dio 的 HTTP 请求
+- 将响应转换为 `BaseResp<T>` 和自定义模型
+- 请求、响应和错误日志，支持输出 cURL
+- 可配置的请求重试
+- 文件上传和下载
+- HTTP/2 支持
+- Android 和 iOS 系统代理集成
+
+## 环境要求
+
+- Dart `>=3.5.4`
+- Flutter `>=3.24.5`
 
 ## 安装
 
-运行下面的命令:
+运行：
 
-Dart:
-
-``` shell
-dart pub add sm_network
-```
-
-Flutter:
-
-``` shell
+```shell
 flutter pub add sm_network
 ```
 
-或者在 `pubspec.yaml` 文件中添加依赖并运行`dart pub get`：
+或者在 `pubspec.yaml` 中添加依赖，然后运行 `flutter pub get`：
 
-``` yaml
+```yaml
 dependencies:
-  sm_network: ^1.3.1
+  sm_network: ^1.4.0
 ```
 
 ## 使用
 
-``` dart
-补充中...
+先配置一次共享客户端，然后通过 `Http` 发起请求：
+
+```dart
+import 'package:sm_network/sm_network.dart';
+
+Future<void> main() async {
+  await Http.shared.config(
+    options: HttpBaseOptions(
+      baseUrl: 'https://api.example.com',
+      log: const HttpLog(
+        options: LogOptions(
+          enable: true,
+          responseData: true,
+          curl: true,
+        ),
+      ),
+      retryOptions: const HttpRetryOptions(retryCount: 2),
+    ),
+  );
+
+  final response = await Http.get<Map<String, dynamic>>(
+    path: '/profile',
+  );
+
+  if (!response.isSuccess) {
+    throw StateError(response.message ?? 'Request failed');
+  }
+
+  print(response.data);
+}
 ```

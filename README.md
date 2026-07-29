@@ -1,52 +1,70 @@
 # sm_network
 
 | [English](README.md) | [简体中文](README.zh.md) |
-| ------------------------------- | ----------------------- |
+| -------------------- | ----------------------- |
 
-A Flutter networking library that provides several commonly used features:
-
-- 📱 Supports Dio network requests
-- 📦 Supports JSON parsing
-- 🎉 Supports printing logs to the console
-- 💥 Supports printing error information to the console
-- *(Remaining features are still under development...)*
+A Flutter networking library built on Dio.
 
 ## Features
 
-- [x] <span style="color: lightgreen;">Supports Dio network requests</span>
-- [x] <span style="color: lightgreen;">Supports JSON parsing</span>
-- [x] <span style="color: lightgreen;">Supports printing logs to the console</span>
-- [x] <span style="color: lightgreen;">Supports printing error information to the console</span>
-- [x] <span style="color: #A9A9A9;">Initial configuration</span>
-- [ ] <span style="color: #A9A9A9;">Supports log writing to file cache</span>
+- Dio-based HTTP requests
+- Response conversion to `BaseResp<T>` and custom models
+- Request, response, and error logs with cURL output
+- Configurable request retries
+- File upload and download
+- HTTP/2 support
+- Android and iOS system proxy integration
 
-## Installing
+## Requirements
 
-Depend on it
+- Dart `>=3.5.4`
+- Flutter `>=3.24.5`
 
-Run this command:
+## Installation
 
-With Dart:
+Run:
 
-``` shell
-dart pub add sm_network
-```
-
-With Flutter:
-
-``` shell
+```shell
 flutter pub add sm_network
 ```
 
-Or add the dependency to your `pubspec.yaml` file and run `dart pub get`:
+Or add the dependency to `pubspec.yaml` and run `flutter pub get`:
 
-``` yaml
+```yaml
 dependencies:
-  sm_network: ^1.3.1
+  sm_network: ^1.4.0
 ```
 
 ## Usage
 
-``` dart
-Supplementing...
+Configure the shared client once, then make requests through `Http`:
+
+```dart
+import 'package:sm_network/sm_network.dart';
+
+Future<void> main() async {
+  await Http.shared.config(
+    options: HttpBaseOptions(
+      baseUrl: 'https://api.example.com',
+      log: const HttpLog(
+        options: LogOptions(
+          enable: true,
+          responseData: true,
+          curl: true,
+        ),
+      ),
+      retryOptions: const HttpRetryOptions(retryCount: 2),
+    ),
+  );
+
+  final response = await Http.get<Map<String, dynamic>>(
+    path: '/profile',
+  );
+
+  if (!response.isSuccess) {
+    throw StateError(response.message ?? 'Request failed');
+  }
+
+  print(response.data);
+}
 ```
