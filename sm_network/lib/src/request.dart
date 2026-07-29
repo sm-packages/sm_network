@@ -440,6 +440,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
           () => _fetch<E>(
             path: path,
             savePath: savePath,
+            method: method,
             data: data,
             files: files,
             queryParameters: queryParameters,
@@ -456,6 +457,7 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
         return await _fetch<E>(
           path: path,
           savePath: savePath,
+          method: method,
           data: data,
           files: files,
           queryParameters: queryParameters,
@@ -493,11 +495,11 @@ mixin RequestMixin<R extends BaseResp<T>, T> on HttpOptionsMixin<R, T>
     path ??= this.path;
     savePath ??= this.savePath;
     method ??= this.method;
-    options?.method ??= method?.methodName;
     data ??= this.data;
     files ??= this.files;
     queryParameters ??= parameters;
     options ??= this.options;
+    options?.method ??= method?.methodName;
     cancelToken ??= this.cancelToken;
     onReceiveProgress ??= this.onReceiveProgress;
 
