@@ -18,9 +18,11 @@ class HttpClientOptions {
   /// PEM证书内容.
   String? pem;
 
-  /// PKCS12 证书路径.
+  /// 受 `SecurityContext.setTrustedCertificates` 支持的证书路径。
+  ///
+  /// iOS 仅支持单个 DER X.509 证书；其他 I/O 平台支持 PEM 或 PKCS12。
   String? pKCSPath;
 
-  /// PKCS12 证书密码.
+  /// PKCS12 证书密码；PEM 和 DER 证书会忽略此值。
   String? pKCSPwd;
 }

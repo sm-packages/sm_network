@@ -1,3 +1,6 @@
+@TestOn('vm')
+library;
+
 import 'package:dio_http2_adapter/dio_http2_adapter.dart';
 import 'package:sm_network/sm_network.dart';
 import 'package:test/test.dart';

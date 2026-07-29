@@ -1,10 +1,7 @@
-import 'dart:io' as io;
-
 import 'package:dio/dio.dart';
-import 'package:dio/io.dart';
-import 'package:dio_http2_adapter/dio_http2_adapter.dart';
 
 import 'coverters/converter.dart';
+import 'http_client_adapter.dart' if (dart.library.io) 'http_client_adapter_io.dart';
 import 'intercaptors/log_interceptor.dart';
 import 'options/options.dart';
 import 'request.dart';
@@ -39,9 +36,9 @@ enum ContentType {
   String get value {
     switch (this) {
       case ContentType.raw:
-        return io.ContentType.text.toString();
+        return '${Headers.textPlainContentType}; charset=utf-8';
       case ContentType.json:
-        return io.ContentType.json.toString();
+        return '${Headers.jsonContentType}; charset=utf-8';
       case ContentType.urlencoded:
         return Headers.formUrlEncodedContentType;
       case ContentType.multipart:
@@ -52,7 +49,7 @@ enum ContentType {
   /// 从 content-type 值获取 [ContentType]
   static ContentType? tryParse(String? value) {
     if (value != null) {
-      final mediaType = io.ContentType.parse(value).mimeType;
+      final mediaType = value.split(';').first.trim().toLowerCase();
       switch (mediaType) {
         case Headers.textPlainContentType:
           return ContentType.raw;
@@ -157,40 +154,7 @@ final class Http {
     if (httpClientAdapter != null) {
       _dio.httpClientAdapter = httpClientAdapter;
     } else if (httpClientOptions != null && httpClientOptions.enable) {
-      if (httpClientOptions.h2) {
-        _dio.httpClientAdapter = Http2Adapter(
-          ConnectionManager(
-            idleTimeout: const Duration(seconds: 10),
-            onClientCreate: (_, config) {
-              config.onBadCertificate = (_) => true;
-            },
-          ),
-        );
-      } else if (_dio.httpClientAdapter is IOHttpClientAdapter) {
-        final IOHttpClientAdapter httpClientAdapter = _dio.httpClientAdapter as IOHttpClientAdapter;
-        httpClientAdapter.createHttpClient = () {
-          io.HttpClient client = io.HttpClient()..idleTimeout = const Duration(seconds: 3);
-          if (httpClientOptions.pKCSPath != null) {
-            final io.SecurityContext sc = io.SecurityContext();
-            //file为证书路径
-            sc.setTrustedCertificates(
-              httpClientOptions.pKCSPath!,
-              password: httpClientOptions.pKCSPwd,
-            );
-            client = io.HttpClient(context: sc);
-          }
-          client.badCertificateCallback = (io.X509Certificate cert, String host, int port) => true;
-          client.idleTimeout = const Duration(seconds: 15);
-          if (httpClientOptions.pem != null) {
-            client.badCertificateCallback = (io.X509Certificate cert, String host, int port) =>
-                cert.pem == httpClientOptions.pem;
-          } else {
-            client.badCertificateCallback =
-                (io.X509Certificate cert, String host, int port) => true;
-          }
-          return client;
-        };
-      }
+      configureHttpClientAdapter(_dio, httpClientOptions);
     }
 
     if (transformer != null) {
