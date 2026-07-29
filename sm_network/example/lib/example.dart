@@ -1,39 +1,33 @@
 import 'package:sm_network/sm_network.dart';
+import 'package:sm_network_example/example_server.dart';
 
 Future<void> main(List<String> args) async {
-  configHttp(baseUrl: 'https://httpbin.org/');
+  final server = await ExampleServer.start();
+  configHttp(baseUrl: server.baseUri.toString());
 
-  await session1();
-  await session2();
-  await session3();
-  await session4();
+  try {
+    await rawGet();
+    await modelConversion();
+  } finally {
+    await server.close();
+  }
 }
 
 void configHttp({
   String? baseUrl,
   Map<String, dynamic>? headers,
   HttpClientAdapter? httpClientAdapter,
+  ConverterOptions? converterOptions,
 }) {
-  // Or you can create dio instance and config it as follow:
-  //  final dio = Dio(BaseOptions(
-  //    baseUrl: "http://www.dtworkroom.com/doris/1/2.0.0/",
-  //    connectTimeout: const Duration(seconds: 5),
-  //    receiveTimeout: const Duration(seconds: 5),
-  //    headers: {
-  //      HttpHeaders.userAgentHeader: 'dio',
-  //      'common-header': 'xx',
-  //    },
-  //  ));
   Http.shared.config(
-    // dio: dio,
     options: HttpBaseOptions(
       baseUrl: baseUrl ?? '',
       connectTimeout: const Duration(seconds: 5),
       receiveTimeout: const Duration(seconds: 5),
-      validateStatus: (status) => status != null && status == 200,
+      validateStatus: (status) => status == 200,
       headers: {
         'user-agent': 'sm_network',
-        'common-header': 'xx',
+        'accept': 'application/json',
         ...?headers,
       },
       log: HttpLog(
@@ -42,89 +36,59 @@ void configHttp({
           print('$error\n$stackTrace');
         },
       ),
-      converterOptions: DefaultConverterOptions(
-        code: 'code',
-        data: 'data',
-        message: 'message',
-        status: (status, data) => status == 1,
-      ),
+      converterOptions: converterOptions ?? const DefaultConverterOptions(),
     ),
     interceptors: [
       InterceptorsWrapper(
         onRequest: (options, handler) {
-          print('InterceptorsWrapper onRequest');
-          // return handler.resolve( Response(data:"xxx"));
-          // return handler.reject( DioException(message: "eh"));
-          return handler.next(options);
+          print('${options.method} ${options.uri}');
+          handler.next(options);
         },
       ),
-      HttpLogInterceptor(
-          // onRequest: (response, handler) {
-          //   print('HttpLogInterceptor onRequest');
-          //   return handler.next(response);
-          // },
-          // onResponse: (response, handler) {
-          //   print('HttpLogInterceptor onResponse');
-          //   return handler.next(response);
-          // },
-          // onError: (response, handler) {
-          //   print('HttpLogInterceptor onError');
-          //   return handler.next(response);
-          // },
-          )
+      HttpLogInterceptor(),
     ],
     httpClientAdapter: httpClientAdapter,
   );
 }
 
-Future session1() async {
-  // Get
-  final response = await Http.get(path: 'https://pub.dev/');
-  print(response);
-}
-
-Future session2() async {
-  // Download a file
-  final response = await Http.download(
-    path: 'https://pub.dev/',
-    savePath: './download/xx.html',
-    queryParameters: {'a': 1},
-    onReceiveProgress: (received, total) {
-      print('received: $received, total: $total');
-    },
+Future<void> rawGet() async {
+  final response = await Http.fetch<Map<String, dynamic>, Object?>(
+    path: '/raw',
+    method: Method.get,
+    queryParameters: {'source': 'sm_network'},
   );
-  print(response);
+
+  print('raw status: ${response.statusCode}');
+  print('raw data: ${response.data}');
 }
 
-Future session3() async {
-  // Create a FormData
-  final formData = FormData.fromMap({
-    'age': 25,
-    'file': await MultipartFile.fromFile(
-      '../assets/upload.txt',
-      filename: 'upload.txt',
-    ),
-  });
+Future<void> modelConversion() async {
+  final userResponse = await Http.session<User>(
+    path: '/model',
+    fromJsonT: User.fromJson,
+  ).get();
 
-  // Send FormData
-  final response = await Http.post(path: '/test', data: formData);
-  print(response);
+  print('user: ${userResponse.data}');
+
+  final usersResponse = await Http.session<User>(
+    path: '/models',
+    fromJsonT: User.fromJson,
+  ).get();
+
+  print('users: ${usersResponse.list}');
 }
 
-Future session4() async {
-  // post data with "application/x-www-form-urlencoded" format
-  final response = await Http.post(
-    path: '/test',
-    data: {
-      'id': 8,
-      'info': {
-        'name': 'wendux',
-        'age': 25,
-      },
-    },
-    options: HttpOptions(
-      contentType: ContentType.urlencoded,
-    ),
-  );
-  print(response);
+final class User {
+  const User({required this.id, required this.name});
+
+  factory User.fromJson(Map<String, dynamic> json) => User(
+        id: json['id'] as int,
+        name: json['name'] as String,
+      );
+
+  final int id;
+  final String name;
+
+  @override
+  String toString() => 'User(id: $id, name: $name)';
 }

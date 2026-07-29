@@ -1,49 +1,41 @@
 import 'dart:convert';
-import 'dart:io';
 
-import 'package:sm_network/io.dart';
 import 'package:sm_network/sm_network.dart';
 import 'package:sm_network_example/example.dart';
+import 'package:sm_network_example/example_server.dart';
 
 /// FormData will create readable "multipart/form-data" streams.
 /// It can be used to submit forms and file uploads to http server.
 void main() async {
-  configHttp(
-    baseUrl: 'http://localhost:3000/',
-    httpClientAdapter: IOHttpClientAdapter(
-      createHttpClient: () {
-        final client = HttpClient();
-        client.findProxy = (uri) {
-          // Proxy all request to localhost:8888
-          return 'PROXY localhost:8888';
-        };
-        client.badCertificateCallback = (cert, host, port) => true;
-        return client;
+  final server = await ExampleServer.start();
+  configHttp(baseUrl: server.baseUri.toString());
+
+  try {
+    final data1 = await formData1();
+    final data2 = await formData2();
+    final bytes1 = await data1.readAsBytes();
+    final bytes2 = await data2.readAsBytes();
+    assert(bytes1.length == bytes2.length);
+
+    final data3 = await formData3();
+    print(utf8.decode(await data3.readAsBytes()));
+
+    final uploadData = await formData3();
+    final response = await Http.fetch<Map<String, dynamic>, Object?>(
+      path: '/upload',
+      method: Method.post,
+      data: uploadData,
+      onSendProgress: (sent, total) {
+        if (total <= 0) {
+          return;
+        }
+        print('percentage: ${(sent / total * 100).toStringAsFixed(0)}%');
       },
-    ),
-  );
-  BaseResp response;
-
-  final data1 = await formData1();
-  final data2 = await formData2();
-  final bytes1 = await data1.readAsBytes();
-  final bytes2 = await data2.readAsBytes();
-  assert(bytes1.length == bytes2.length);
-
-  final data3 = await formData3();
-  print(utf8.decode(await data3.readAsBytes()));
-
-  response = await Http.post(
-    path: 'http://localhost:3000/upload',
-    data: data3,
-    onSendProgress: (sent, total) {
-      if (total <= 0) {
-        return;
-      }
-      print('percentage: ${(sent / total * 100).toStringAsFixed(0)}%');
-    },
-  );
-  print(response);
+    );
+    print(response.data);
+  } finally {
+    await server.close();
+  }
 }
 
 Future<FormData> formData1() async {

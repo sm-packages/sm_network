@@ -12,7 +12,7 @@ Future<void> main(List<String> args) async {
 
   Http.shared.config(
     options: HttpBaseOptions(
-      baseUrl: 'https://httpbin.org/',
+      baseUrl: 'https://httpbingo.org/',
       connectTimeout: const Duration(seconds: 5),
       receiveTimeout: const Duration(seconds: 5),
       validateStatus: (status) => status != null && status == 200,
@@ -66,7 +66,7 @@ Future<void> main(List<String> args) async {
     httpClientAdapter: await SystemProxy.createAdapter(),
   );
 
-  runApp(MaterialApp(home: App()));
+  runApp(const MaterialApp(home: App()));
 }
 
 class App extends StatefulWidget {
@@ -86,9 +86,12 @@ class _AppState extends State<App> {
     request();
   }
 
-  Future request() async {
+  Future<void> request() async {
     final resp = await PostSession().request();
     print(resp);
+    if (!mounted) {
+      return;
+    }
     if (resp.isSuccess) {
       setState(() {
         person = resp.data;

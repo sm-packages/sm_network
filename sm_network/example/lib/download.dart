@@ -3,22 +3,28 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:sm_network_example/example.dart';
+import 'package:sm_network_example/example_server.dart';
 import 'package:sm_network/sm_network.dart';
 
 // In this example we download a image and listen the downloading progress.
 void main() async {
+  final server = await ExampleServer.start();
   configHttp(headers: {
     // Assure the value of total argument of onReceiveProgress is not -1.
     'accept-encoding': '*',
   });
 
-  final url = 'https://pub.dev/static/hash-rhob5slb/img/pub-dev-logo.svg';
-  await download1(url, './download/pub-dev-logo.svg');
-  await download1(url, (headers) => './download/pub-dev-logo-1.svg');
-  await download1(url, (headers) async => './download/pub-dev-logo-2.svg');
-  // await download2(url, './download/pub-dev-logo-3.svg');
-  // await download1(url, (headers) => './download/pub-dev-logo-4.svg');
-  // await download1(url, (headers) async => './download/pub-dev-logo-5.svg');
+  try {
+    await Directory('./download').create(recursive: true);
+
+    final url = server.baseUri.resolve('download').toString();
+    await download1(url, './download/example.svg');
+    await download1(url, (headers) => './download/example-1.svg');
+    await download1(url, (headers) async => './download/example-2.svg');
+    // await download2(url, './download/example-3.svg');
+  } finally {
+    await server.close();
+  }
 }
 
 Future download1(String url, savePath) async {

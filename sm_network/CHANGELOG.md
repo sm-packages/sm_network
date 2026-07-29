@@ -9,6 +9,13 @@
 * Move Android and iOS system proxy support to the optional
   `sm_network_proxy` Flutter plugin so the core package stays Dart-only.
 * Keep `Http.config()` synchronous.
+* Keep the public Web entrypoint free of `dart:io` implementations.
+* Preserve system TLS certificate validation unless a PEM certificate is
+  explicitly configured.
+* Expand the documentation and runnable examples for model conversion,
+  uploads, downloads, retries, cancellation, HTTP/2, and platform behavior.
+* Preserve the requested HTTP method for convenience requests, uploads, and
+  downloads.
 
 ## 1.3.1
 
