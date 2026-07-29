@@ -22,8 +22,8 @@ void main() {
     debugDefaultTargetPlatformOverride = null;
   });
 
-  test('creates an IO adapter with the system proxy', () async {
-    messenger.setMockMethodCallHandler(channel, (_) async => '127.0.0.1:8080');
+  Future<String?> proxyDirective(String? proxy) async {
+    messenger.setMockMethodCallHandler(channel, (_) async => proxy);
     final client = _RecordingHttpClient();
 
     await HttpOverrides.runZoned(
@@ -34,76 +34,41 @@ void main() {
       createHttpClient: (_) => client,
     );
 
-    expect(
-      client.proxyFor(Uri.https('example.com', '/')),
+    return client.proxyFor(Uri.https('example.com', '/'));
+  }
+
+  for (final (description, proxy, expected) in <(String, String?, String)>[
+    (
+      'creates an IO adapter with the system proxy',
+      '127.0.0.1:8080',
       'PROXY 127.0.0.1:8080',
-    );
-  });
+    ),
+    (
+      'preserves an explicit port 80 proxy',
+      'proxy.example:80',
+      'PROXY proxy.example:80',
+    ),
+    (
+      'formats an IPv6 proxy for HttpClient',
+      '2001:db8::1:8080',
+      'PROXY [2001:db8::1]:8080',
+    ),
+    (
+      'rejects out-of-range proxy ports',
+      'proxy.example:70000',
+      'DIRECT',
+    ),
+    ('creates a direct adapter when no system proxy exists', null, 'DIRECT'),
+  ]) {
+    test(description, () async {
+      expect(await proxyDirective(proxy), expected);
+    });
+  }
 
   test('creates an HTTP/2 adapter with the system proxy', () async {
     messenger.setMockMethodCallHandler(channel, (_) async => '127.0.0.1:8080');
 
     expect(await SystemProxy.createAdapter(http2: true), isA<Http2Adapter>());
-  });
-
-  test('preserves an explicit port 80 proxy', () async {
-    messenger.setMockMethodCallHandler(channel, (_) async => 'proxy.example:80');
-    final client = _RecordingHttpClient();
-
-    await HttpOverrides.runZoned(
-      () async {
-        final adapter = await SystemProxy.createAdapter() as IOHttpClientAdapter;
-        adapter.createHttpClient!();
-      },
-      createHttpClient: (_) => client,
-    );
-
-    expect(client.proxyFor(Uri.https('example.com', '/')), 'PROXY proxy.example:80');
-  });
-
-  test('formats an IPv6 proxy for HttpClient', () async {
-    messenger.setMockMethodCallHandler(channel, (_) async => '2001:db8::1:8080');
-    final client = _RecordingHttpClient();
-
-    await HttpOverrides.runZoned(
-      () async {
-        final adapter = await SystemProxy.createAdapter() as IOHttpClientAdapter;
-        adapter.createHttpClient!();
-      },
-      createHttpClient: (_) => client,
-    );
-
-    expect(client.proxyFor(Uri.https('example.com', '/')), 'PROXY [2001:db8::1]:8080');
-  });
-
-  test('rejects out-of-range proxy ports', () async {
-    messenger.setMockMethodCallHandler(channel, (_) async => 'proxy.example:70000');
-    final client = _RecordingHttpClient();
-
-    await HttpOverrides.runZoned(
-      () async {
-        final adapter = await SystemProxy.createAdapter() as IOHttpClientAdapter;
-        adapter.createHttpClient!();
-      },
-      createHttpClient: (_) => client,
-    );
-
-    expect(client.proxyFor(Uri.https('example.com', '/')), 'DIRECT');
-  });
-
-  test('creates a direct adapter when no system proxy exists', () async {
-    messenger.setMockMethodCallHandler(channel, (_) async => null);
-    final client = _RecordingHttpClient();
-
-    await HttpOverrides.runZoned(
-      () async {
-        final adapter = await SystemProxy.createAdapter() as IOHttpClientAdapter;
-        adapter.createHttpClient!();
-      },
-      createHttpClient: (_) => client,
-    );
-
-    expect(client.proxyFor(Uri.https('example.com', '/')), 'DIRECT');
   });
 }
 
