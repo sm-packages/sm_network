@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import '../../../sm_network.dart';
+import 'package:sm_retry/sm_retry.dart';
 
 /// 网络请求重试选项
 class HttpRetryOptions {

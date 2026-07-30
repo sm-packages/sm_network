@@ -6,6 +6,7 @@
 * Fix exception response data type handling.
 * Add `HttpClientOptions`, including HTTP/2 support.
 * Require Dio 5.9.2 or later for HTTP/2 adapter compatibility.
+* Use `sm_retry` for shared retry and exponential backoff behavior.
 * Move Android and iOS system proxy support to the optional
   `sm_network_proxy` Flutter plugin so the core package stays Dart-only.
 * Keep `Http.config()` synchronous.

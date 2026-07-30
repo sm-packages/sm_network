@@ -1,4 +1,4 @@
 /// This is a utils library
 library;
 
-export 'src/retry.dart';
+export 'package:sm_retry/sm_retry.dart';
